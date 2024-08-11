@@ -33,7 +33,7 @@ export const additionalProduct = {
     status: "in-stock",
     reviews: [],
     productType: "electronics",
-    description: "The Luckeep X1 is a versatile foldable electric bike designed for both city commuting and off-road adventures...",
+    description: "The Luckeep X1 is a versatile foldable electric bike designed for both city commuting and off-road adventures. and it has 750W high-speed brushless motor provides powerful and efficient assistance, allowing you to easily tackle hills and ride longer distances. Reach up to 30MPH Max speed and 85N.m torque.Special tires for outdoor use, anti-puncture and anti-flat tires, alleviating vibrations between the tires and the ground during high-speed driving for enhanced comfort.",
     additionalInformation: [
       { key: "Motor", value: "750W (Peak 1200W) BaFang Brushless Rear Hub Motor" },
       { key: "Battery", value: "48V 15Ah Lithium-ion (720Wh), Removable" },
