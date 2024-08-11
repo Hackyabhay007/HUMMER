@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import Link from "next/link";
 // internal
-import slider_img_1 from "@assets/img/slider/slider-img-1.png";
+import slider_img_1 from "@assets/img/slider/bike.png";
 import slider_img_2 from "@assets/img/slider/slider-img-2.png";
 import slider_img_3 from "@assets/img/slider/slider-img-3.png";
 import shape_1 from "@assets/img/slider/shape/slider-shape-1.png";
@@ -19,10 +19,10 @@ const sliderData = [
   {
     id: 1,
     pre_title: { text: "Starting at", price: 274 },
-    title: "The best tablet Collection 2023",
+    title: "Luckeep X1",
     subtitle: {
       text_1: "Exclusive offer ",
-      percent: 35,
+      percent: 45,
       text_2: "off this week",
     },
     img: slider_img_1,
