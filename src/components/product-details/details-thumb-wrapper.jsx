@@ -17,7 +17,21 @@ const DetailsThumbWrapper = ({
       <div className="tp-product-details-thumb-wrapper tp-tab d-sm-flex">
         <nav>
           <div className="nav nav-tabs flex-sm-column">
-          
+            {imageURLs?.map((item, i) => (
+              <button
+                key={i}
+                className={`nav-link ${item.img === activeImg ? "active" : ""}`}
+                onClick={() => handleImageActive(item)}
+              >
+                <Image
+                  src={item.img}
+                  alt="image"
+                  width={78}
+                  height={100}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </button>
+            ))}
           </div>
         </nav>
         <div className="tab-content m-img">
@@ -26,8 +40,8 @@ const DetailsThumbWrapper = ({
               <Image
                 src={activeImg}
                 alt="product img"
-                width={imgWidth}
-                height={imgHeight}
+                width={400}
+                height={300}
               />
               <div className="tp-product-badge">
                 {status === 'out-of-stock' && <span className="product-hot">out-stock</span>}
@@ -46,6 +60,15 @@ const DetailsThumbWrapper = ({
           </div>
         </div>
       </div>
+      {/* modal popup start */}
+      {videoId && (
+        <PopupVideo
+          isVideoOpen={isVideoOpen}
+          setIsVideoOpen={setIsVideoOpen}
+          videoId={videoId}
+        />
+      )}
+      {/* modal popup end */}
     </>
   );
 };

@@ -23,6 +23,30 @@ export const additionalProduct = {
         },
         img: "https://luckeepbike.com/cdn/shop/files/X1_10bd40e5-aabd-42a0-8337-4e484faecbae.jpg?v=1723011067&width=800",
         sizes: []
+      },
+      {
+        color: {
+          name: "Grey",
+          clrCode: "#B0B0B0"
+        },
+        img: "https://luckeepbike.com/cdn/shop/files/7--Luckeep_X1_Offroad_7.15.24.jpg?v=1721182409&width=1200",
+        sizes: []
+      },
+      {
+        color: {
+          name: "Grey",
+          clrCode: "#B0B0B0"
+        },
+        img: "https://luckeepbike.com/cdn/shop/files/45ED5CBC-06E0-4F15-9FAB-91238C2E73CF_a570dc86-44cf-4991-964a-946e9507cb73.jpg?v=1722477967&width=1800",
+        sizes: []
+      },
+      {
+        color: {
+          name: "Grey",
+          clrCode: "#B0B0B0"
+        },
+        img: "https://luckeepbike.com/cdn/shop/files/12--Luckeep_X1_Offroad_7.15.24_8c1720d6-f3cf-4753-8f91-c520dd3f8ea0.jpg?v=1722478038&width=1600",
+        sizes: []
       }
     ],
     parent: "Electronics",

@@ -29,6 +29,7 @@ const CheckoutArea = () => {
     expiryDate: "",
     cvc: "",
   });
+  const [cardErrors, setCardErrors] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [isBillingSame, setIsBillingSame] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState("United States");
@@ -62,15 +63,26 @@ const CheckoutArea = () => {
 
   const validateCardDetails = () => {
     const { cardNumber, expiryDate, cvc } = cardDetails;
+    const errors = {};
+
     const cardNumberRegex = /^[0-9]{16}$/;
     const expiryDateRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
     const cvcRegex = /^[0-9]{3,4}$/;
 
-    return (
-      cardNumberRegex.test(cardNumber.replace(/ /g, "")) &&
-      expiryDateRegex.test(expiryDate) &&
-      cvcRegex.test(cvc)
-    );
+    if (!cardNumberRegex.test(cardNumber.replace(/ /g, ""))) {
+      errors.cardNumber = "Invalid card number. Must be 16 digits.";
+    }
+
+    if (!expiryDateRegex.test(expiryDate)) {
+      errors.expiryDate = "Invalid expiry date. Must be in MM/YY format.";
+    }
+
+    if (!cvcRegex.test(cvc)) {
+      errors.cvc = "Invalid CVC. Must be 3 or 4 digits.";
+    }
+
+    setCardErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleCheckout = async (data) => {
@@ -91,8 +103,6 @@ const CheckoutArea = () => {
       setTimeout(() => {
         router.push("/");
       }, 3000);
-    } else {
-      alert("Please enter valid card details.");
     }
   };
 
@@ -108,7 +118,6 @@ const CheckoutArea = () => {
           <div className="row justify-content-center">
             <form onSubmit={handleSubmit(handleCheckout)} className="col-lg-8 col-12">
               <div className="row g-4">
-           
 
                 {/* Delivery Section */}
                 <div className="col-12">
@@ -117,21 +126,21 @@ const CheckoutArea = () => {
                     <div className="tp-checkout-bill-form">
                       <div className="tp-checkout-bill-inner">
                         <div className="row g-3">
-                               {/* Country Selection */}
-                <div className="col-12">
-                  <label className="form-label">Country/Region</label>
-                  <select
-                    className="form-select form-control"
-                    value={selectedCountry}
-                    onChange={(e) => setSelectedCountry(e.target.value)}
-                  >
-                    {countries.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                          {/* Country Selection */}
+                          <div className="col-12">
+                            <label className="form-label">Country/Region</label>
+                            <select
+                              className="form-select form-control"
+                              value={selectedCountry}
+                              onChange={(e) => setSelectedCountry(e.target.value)}
+                            >
+                              {countries.map((country) => (
+                                <option key={country} value={country}>
+                                  {country}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                           {/* First Name and Last Name */}
                           <div className="col-md-6">
                             <label className="form-label">First name</label>
@@ -282,11 +291,12 @@ const CheckoutArea = () => {
                               value={cardDetails.cardNumber}
                               onChange={onCardInputChange}
                               className={`form-control ${
-                                !validateCardDetails() && cardDetails.cardNumber.length > 0
-                                  ? "is-invalid"
-                                  : ""
+                                cardErrors.cardNumber ? "is-invalid" : ""
                               }`}
                             />
+                            {cardErrors.cardNumber && (
+                              <div className="text-danger mt-1">{cardErrors.cardNumber}</div>
+                            )}
                           </div>
 
                           {/* Expiration Date and CVC */}
@@ -299,11 +309,12 @@ const CheckoutArea = () => {
                               value={cardDetails.expiryDate}
                               onChange={onCardInputChange}
                               className={`form-control ${
-                                !validateCardDetails() && cardDetails.expiryDate.length > 0
-                                  ? "is-invalid"
-                                  : ""
+                                cardErrors.expiryDate ? "is-invalid" : ""
                               }`}
                             />
+                            {cardErrors.expiryDate && (
+                              <div className="text-danger mt-1">{cardErrors.expiryDate}</div>
+                            )}
                           </div>
                           <div className="col-md-6">
                             <label className="form-label">Security Code</label>
@@ -313,12 +324,11 @@ const CheckoutArea = () => {
                               placeholder="CVC"
                               value={cardDetails.cvc}
                               onChange={onCardInputChange}
-                              className={`form-control ${
-                                !validateCardDetails() && cardDetails.cvc.length > 0
-                                  ? "is-invalid"
-                                  : ""
-                              }`}
+                              className={`form-control ${cardErrors.cvc ? "is-invalid" : ""}`}
                             />
+                            {cardErrors.cvc && (
+                              <div className="text-danger mt-1">{cardErrors.cvc}</div>
+                            )}
                           </div>
 
                           {/* Billing Address Checkbox */}
