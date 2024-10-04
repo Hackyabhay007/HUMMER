@@ -41,7 +41,7 @@ const Header = () => {
                 <div className="col-xl-2 col-lg-2 col-md-4 col-6">
                   <div className="logo">
                     <Link href="/">
-                    <h2>HUMMER</h2>
+                    <h2>HOWARCART</h2>
                     </Link>
                   </div>
                 </div>
@@ -68,7 +68,7 @@ const Header = () => {
               <div className="col-xl-3 col-lg-3 col-md-3 col-6">
                 <div className="logo">
                   <Link href="/">
-                   <h2>HUMMER</h2>
+                   <h2>HOWARCART</h2>
                   </Link>
                 </div>
               </div>

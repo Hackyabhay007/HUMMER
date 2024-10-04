@@ -50,7 +50,7 @@ const HeaderTwo = ({ style_2 = false }) => {
                   <div className="col-xl-2 col-lg-5 col-md-5 col-sm-4 col-6">
                     <div className="logo">
                       <Link href="/">
-                      <h2>HUMMER</h2>
+                      <h2>HOWARCART</h2>
                       </Link>
                     </div>
                   </div>

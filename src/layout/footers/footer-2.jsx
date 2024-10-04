@@ -8,7 +8,7 @@ import logo from '@assets/img/logo/logo.svg';
 import pay from '@assets/img/footer/footer-pay.png';
 
 const FooterTwo = () => {
-  return (
+  return (s
     <>
       <footer>
         <div className="tp-footer-area tp-footer-style-2 tp-footer-style-3 tp-footer-style-4" data-bg-color="#F5F5F5" style={{ backgroundColor: `rgb(245, 245, 245)` }}>
@@ -19,7 +19,7 @@ const FooterTwo = () => {
                   <div className="tp-footer-widget footer-col-4-1 mb-50">
                     <div className="tp-footer-logo">
                       <Link href="/">
-                      <h2>HUMMER</h2>
+                      <h2>HOWARCART</h2>
                       </Link>
                     </div>
                     <div className="tp-footer-widget-content">

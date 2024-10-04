@@ -20,7 +20,7 @@ const Footer = ({ style_2 = false, style_3 = false,primary_style=false }) => {
                   <div className="tp-footer-widget-content">
                     <div className="tp-footer-logo">
                       <Link href="/">
-                      <h2>HUMMER</h2>
+                      <h2>HOWARCART</h2>
                       </Link>
                     </div>
                     <p className="tp-footer-desc">We Are Worlds Best Ecommerce Company</p>
@@ -75,7 +75,7 @@ const Footer = ({ style_2 = false, style_3 = false,primary_style=false }) => {
               <div className="row align-items-center">
                 <div className="col-md-6">
                   <div className="tp-footer-copyright">
-                    <p>© {new Date().getFullYear()} All Rights Reserved  |  HUMMER
+                    <p>© {new Date().getFullYear()} All Rights Reserved  |  HOWARCART
                       <Link href="/">{" "}</Link>
                     </p>
                   </div>
