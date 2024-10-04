@@ -8,7 +8,7 @@ import logo from '@assets/img/logo/logo.svg';
 import pay from '@assets/img/footer/footer-pay.png';
 
 const FooterTwo = () => {
-  return (s
+  return (
     <>
       <footer>
         <div className="tp-footer-area tp-footer-style-2 tp-footer-style-3 tp-footer-style-4" data-bg-color="#F5F5F5" style={{ backgroundColor: `rgb(245, 245, 245)` }}>
@@ -19,7 +19,7 @@ const FooterTwo = () => {
                   <div className="tp-footer-widget footer-col-4-1 mb-50">
                     <div className="tp-footer-logo">
                       <Link href="/">
-                      <h2>HOWARCART</h2>
+                        <h2>HOWARCART</h2>
                       </Link>
                     </div>
                     <div className="tp-footer-widget-content">
@@ -45,7 +45,7 @@ const FooterTwo = () => {
                             </span>
                           </div>
                           <div className="tp-footer-contact-content">
-                            <p><a href="https://www.google.com/maps/place/Sleepy+Hollow+Rd,+Gouverneur,+NY+13642,+USA/@44.3304966,-75.4552367,17z/data=!3m1!4b1!4m6!3m5!1s0x4cccddac8972c5eb:0x56286024afff537a!8m2!3d44.3304928!4d-75.453048!16s%2Fg%2F1tdsjdj4" target="_blank">79 Sleepy Hollow St. <br /> Jamaica, New York 1432</a></p>
+                            <p><a href="https://www.google.com/maps/place/Sleepy+Hollow+Rd,+Gouverneur,+NY+13642,+USA/@44.3304966,-75.4552367,17z/data=!3m1!4b1!4m6!3m5!1s0x4cccddac8972c5eb:0x56286024afff537a!8m2!3d44.3304928!4d-75.453048!16s%2Fg%2F1tdsjdj4" target="_blank" rel="noopener noreferrer">79 Sleepy Hollow St. <br /> Jamaica, New York 1432</a></p>
                           </div>
                         </div>
                       </div>
@@ -98,10 +98,11 @@ const FooterTwo = () => {
                         </div>
                         <div className="tp-footer-social-4 tp-footer-social">
                           <h4 className="tp-footer-social-title-4">Follow Us On</h4>
-                          {social_data.map(s => <a href={s.link} key={s.id} target="_blank">
-                            <i className={s.icon}></i>
-                          </a>
-                          )}
+                          {social_data.map(s => (
+                            <a href={s.link} key={s.id} target="_blank" rel="noopener noreferrer">
+                              <i className={s.icon}></i>
+                            </a>
+                          ))}
                         </div>
                       </div>
                     </div>
