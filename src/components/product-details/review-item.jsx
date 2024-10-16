@@ -1,32 +1,34 @@
-import dayjs from "dayjs";
-import Image from "next/image";
-import React from "react";
-import { Rating } from "react-simple-star-rating";
+import React from 'react';
+import Image from 'next/image';
+import { Rating } from 'react-simple-star-rating';
 
 const ReviewItem = ({ review }) => {
-  const { comment, createdAt, rating, userId } = review || {};
-  return (
-    <div className="tp-product-details-review-avater d-flex align-items-start">
-      <div className="tp-product-details-review-avater-thumb">
-        {!userId?.imageURL && <h5 className="review-name">{userId?.name[0]}</h5>}
-        <a href="#">
-          {userId?.imageURL && <Image src={userId?.imageURL} alt="user img" width={60} height={60} />}
-        </a>
-      </div>
-      <div className="tp-product-details-review-avater-content">
-        <div className="tp-product-details-review-avater-rating d-flex align-items-center">
-          <Rating allowFraction size={16} initialValue={rating} readonly={true} />
-        </div>
-        <h3 className="tp-product-details-review-avater-title">{userId?.name}</h3>
-        <span className="tp-product-details-review-avater-meta">
-          {dayjs(createdAt).format("MMMM D, YYYY")}
-        </span>
+  const { userId, rating, review: userReview, createdAt } = review || {};
 
-        <div className="tp-product-details-review-avater-comment">
-          <p>
-            {comment}
-          </p>
+  return (
+    <div className="tp-product-details-review-item d-flex mb-30">
+      <div className="tp-product-details-review-avater d-flex align-items-start">
+        <div className="tp-product-details-review-avater-thumb">
+          {!userId?.imageURL && userId?.name && (
+            <h5 className="review-name">{userId.name[0]}</h5>
+          )}
+          <a href="#">
+            {userId?.imageURL && (
+              <Image src={userId.imageURL} alt="user img" width={60} height={60} />
+            )}
+          </a>
         </div>
+        <div className="tp-product-details-review-avater-info">
+          <h4 className="tp-product-details-review-avater-title">{userId?.name || 'Anonymous'}</h4>
+          <span className="tp-product-details-review-avater-meta">{createdAt}</span>
+
+          <div className="tp-product-details-review-rating">
+            <Rating initialValue={rating} readonly size={16} />
+          </div>
+        </div>
+      </div>
+      <div className="tp-product-details-review-content">
+        <p>{userReview}</p>
       </div>
     </div>
   );

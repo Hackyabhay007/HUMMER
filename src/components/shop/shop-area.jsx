@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Pagination from "@/ui/Pagination";
 import ProductItem from "../products/fashion/product-item";
 import CategoryFilter from "./shop-filter/category-filter";
@@ -13,12 +13,27 @@ import ShopTopRight from "./shop-top-right";
 import ResetButton from "./shop-filter/reset-button";
 
 const ShopArea = ({ all_products, products, otherProps }) => {
+  console.log('ShopArea component rendered');
+  console.log('all_products:', all_products);
+  console.log('products:', products);
+  console.log('otherProps:', otherProps);
+
   const {priceFilterValues,selectHandleFilter,currPage,setCurrPage} = otherProps;
   const [filteredRows, setFilteredRows] = useState(products);
   const [pageStart, setPageStart] = useState(0);
   const [countOfPage, setCountOfPage] = useState(12);
 
+  useEffect(() => {
+    console.log('ShopArea useEffect - products changed');
+    setFilteredRows(products);
+  }, [products]);
+
   const paginatedData = (items, startPage, pageCount) => {
+    console.log('paginatedData function called');
+    console.log('items:', items);
+    console.log('startPage:', startPage);
+    console.log('pageCount:', pageCount);
+  
     setFilteredRows(items);
     setPageStart(startPage);
     setCountOfPage(pageCount);
@@ -28,6 +43,12 @@ const ShopArea = ({ all_products, products, otherProps }) => {
   const maxPrice = all_products.reduce((max, product) => {
     return product.price > max ? product.price : max;
   }, 0);
+
+  if (!all_products || !products) {
+    console.log('ShopArea: No products data');
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <section className="tp-shop-area pb-120">
@@ -35,22 +56,15 @@ const ShopArea = ({ all_products, products, otherProps }) => {
           <div className="row">
             <div className="col-xl-3 col-lg-4">
               <div className="tp-shop-sidebar mr-10">
-                {/* filter */}
                 <PriceFilter
                   priceFilterValues={priceFilterValues}
                   maxPrice={maxPrice}
                 />
-                {/* status */}
                 <StatusFilter setCurrPage={setCurrPage} />
-                {/* categories */}
                 <CategoryFilter setCurrPage={setCurrPage} />
-                {/* color */}
                 <ColorFilter setCurrPage={setCurrPage} />
-                {/* product rating */}
                 <TopRatedProducts />
-                {/* brand */}
                 <ProductBrand setCurrPage={setCurrPage} />
-                {/* reset filter */}
                 <ResetButton/>
               </div>
             </div>

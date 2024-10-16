@@ -40,7 +40,7 @@ const handleCloseCartMini = () => {
             <div className="cartmini__shipping">
               <RenderCartProgress/>
             </div>
-            {cart_products.length > 0 && <div className="cartmini__widget">
+            {/* {cart_products.length > 0 && <div className="cartmini__widget">
               {cart_products.map((item) => (
                 <div key={item._id} className="cartmini__widget-item">
                   <div className="cartmini__thumb">
@@ -60,7 +60,7 @@ const handleCloseCartMini = () => {
                   <a onClick={() => handleRemovePrd({ title: item.title, id: item._id })} className="cartmini__del cursor-pointer"><i className="fa-regular fa-xmark"></i></a>
                 </div>
               ))}
-            </div>}
+            </div>} */}
             {/* if no item in cart */}
             {cart_products.length === 0 && <div className="cartmini__empty text-center">
               <Image src={empty_cart_img} alt="empty-cart-img" />

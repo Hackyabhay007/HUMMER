@@ -8,11 +8,11 @@ import { HomeNewArrivalPrdLoader } from "../loader";
 import { useGetProductTypeQuery } from "@/redux/features/productApi";
 
 const MobileMenus = () => {
-  const [isActiveMenu,setIsActiveMenu] = useState("")
 
+  const [isActiveMenu, setIsActiveMenu] = useState("");
   const { data: products, isError, isLoading } = useGetProductTypeQuery({
     type: 'electronics',
-    query: 'new=true'
+    queryParam: 'new'
   });
   
   // decide what to render
