@@ -44,6 +44,11 @@ const ProductItem = ({ product, style_2 = false }) => {
     dispatch(add_to_compare(prd));
   };
 
+  // Format price function
+  const formatPrice = (price) => {
+    const numPrice = Number(price);
+    return isNaN(numPrice) ? "N/A" : numPrice.toFixed(2);
+  };
 
   return (
     <div className={`tp-product-item-2 ${style_2 ? "" : "mb-40"}`}>
@@ -64,7 +69,7 @@ const ProductItem = ({ product, style_2 = false }) => {
       </div>
       <div className="tp-product-content-2 pt-15">
         <div className="tp-product-tag-2">
-          {tags.map((t, i) => (
+          {tags && tags.map((t, i) => (
             <a key={i} href="#">
               {t}
               {i < tags.length - 1 && ","}
@@ -81,15 +86,15 @@ const ProductItem = ({ product, style_2 = false }) => {
           {discount > 0 ? (
             <>
               <span className="tp-product-price-2 new-price">
-                ${price.toFixed(2)}{" "}
+                ${formatPrice(price)}{" "}
               </span>
               <span className="tp-product-price-2 old-price">
-                {" "}${(Number(price) - (Number(price) * Number(discount)) / 100).toFixed(2)}
+                {" "}${formatPrice(Number(price) - (Number(price) * Number(discount)) / 100)}
               </span>
             </>
           ) : (
             <span className="tp-product-price-2 new-price">
-              ${price.toFixed(2)}
+              ${formatPrice(price)}
             </span>
           )}
         </div>

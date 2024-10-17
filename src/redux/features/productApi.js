@@ -63,12 +63,12 @@ export const productApi = apiSlice.injectEndpoints({
       async queryFn() {
         console.log('Fetching all products...');
         try {
-          const querySnapshot = await getDocs(collection(db, "products"));
+          const querySnapshot = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc"))); // Sort by createdAt
           const products = querySnapshot.docs.map(doc => ({
             ...doc.data(),
             _id: doc.id
           }));
-          console.log('Fetched products:', products);
+          console.log('Fetched products:  jj', products);
           return { data: products };
         } catch (error) {
           console.error("Error fetching all products:", error);
@@ -96,12 +96,23 @@ export const productApi = apiSlice.injectEndpoints({
       },
       invalidatesTags: ['Products'],
     }),
-    updateProduct: builder.mutation({
-      async queryFn({ _id, ...updates }) {
+    editProduct: builder.mutation({
+      async queryFn({ _id, productData, files }) {
         try {
+          const updatedProduct = {
+            ...productData,
+            updatedAt: new Date().toISOString(),
+          };
+
+          // Handle image uploads if files are provided
+          if (files && files.length > 0) {
+            const imageUrls = await uploadImages(files);
+            updatedProduct.imageURLs = imageUrls;
+          }
+
           const docRef = doc(db, "products", _id);
-          await updateDoc(docRef, { ...updates, updatedAt: new Date().toISOString() });
-          return { data: { _id, ...updates } };
+          await updateDoc(docRef, updatedProduct);
+          return { data: { _id, ...updatedProduct } };
         } catch (error) {
           console.error("Error updating product:", error);
           return { error: error.message };
@@ -220,7 +231,7 @@ export const productApi = apiSlice.injectEndpoints({
           }
     
           // Now fetch related products using the category
-          const relatedResult = await fetchWithBQ(`/products?category=${product.category.name}&_id_ne=${id}&_limit=4`);
+          const relatedResult = await fetchWithBQ(`/products?category=${product.category.name}&_id_ne=${id}&_limit=4&sort=createdAt:desc`); // Sort by createdAt
           if (relatedResult.error) {
             console.error('Error fetching related products:', relatedResult.error);
             throw new Error(`Failed to fetch related products: ${relatedResult.error.status} ${JSON.stringify(relatedResult.error.data)}`);
@@ -236,11 +247,12 @@ export const productApi = apiSlice.injectEndpoints({
   }),
 });
 
+// Export hooks
 export const {
   useGetAllProductsQuery,
   useGetProductQuery,
   useAddProductMutation,
-  useUpdateProductMutation,
+  useEditProductMutation, // Ensure this is included
   useDeleteProductMutation,
   useUploadImageMutation,
   useGetProductTypeQuery,

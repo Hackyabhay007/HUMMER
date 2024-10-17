@@ -50,7 +50,7 @@ const ProductDetailsArea = ({ productItem }) => {
         <DetailsTabNav product={productItem} />
 
         {/* related products start */}
-        <RelatedProducts />
+        {/* <RelatedProducts /> */}
         {/* related products end */}
       </section>
     </>
