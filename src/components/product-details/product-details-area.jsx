@@ -14,10 +14,19 @@ const ProductDetailsArea = ({ productItem }) => {
   }, [productItem]);
 
   // handle image active
-  const handleImageActive = (img) => {
-    setActiveImg(img);
+  const handleImageActive = (image) => { // Renamed parameter to 'image'
+    const newImg = new Image(); // Renamed variable to 'newImg'
+    newImg.src = image; // Use the renamed parameter
+  
+    newImg.onload = () => {
+      setActiveImg(newImg.src); // Set the active image to the source of the loaded image
+    };
+  
+    newImg.onerror = () => {
+      // Set a default image or handle the error
+      setActiveImg("path/to/default/image.jpg"); // Replace with your default image path
+    };
   };
-
   return (
     <>
       <section className="tp-product-details-area">

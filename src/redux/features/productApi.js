@@ -21,17 +21,21 @@ export const productApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProduct: builder.query({
       async queryFn(id) {
+        console.log("Finding product with ID:", id);
+        
         try {
           const docRef = doc(db, "products", id);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
+            console.log("Product found:", { ...docSnap.data(), _id: docSnap.id });
             return { data: { ...docSnap.data(), _id: docSnap.id } };
           } else {
+            console.warn("Product not found for ID:", id);
             return { error: "Product not found" };
           }
         } catch (error) {
           console.error("Error fetching product:", error);
-          return { error: error.message };
+          return { error: error.message || "An error occurred while fetching the product." };
         }
       },
       providesTags: (result, error, arg) => [{ type: "Product", id: arg }],

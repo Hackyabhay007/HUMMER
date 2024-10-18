@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import PopupVideo from "../common/popup-video";
+// ... existing code ...
 
 const DetailsThumbWrapper = ({
   imageURLs,
@@ -12,6 +13,16 @@ const DetailsThumbWrapper = ({
   status
 }) => {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [activeImage, setActiveImage] = useState(activeImg); // State for active image
+
+  useEffect(() => {
+    setActiveImage(activeImg); // Update active image when prop changes
+  }, [activeImg]);
+
+  const handleImageError = () => {
+    setActiveImage("path/to/default/image.jpg"); // Replace with your default image path
+  };
+
   return (
     <>
       <div className="tp-product-details-thumb-wrapper tp-tab d-sm-flex">
@@ -20,8 +31,8 @@ const DetailsThumbWrapper = ({
             {imageURLs?.map((item, i) => (
               <button
                 key={i}
-                className={`nav-link ${item.img === activeImg ? "active" : ""}`}
-                onClick={() => handleImageActive(item)}
+                className={`nav-link ${item.img === activeImage ? "active" : ""}`}
+                onClick={() => handleImageActive(item.img)} // Pass the image URL
               >
                 <Image
                   src={item.img}
@@ -29,6 +40,7 @@ const DetailsThumbWrapper = ({
                   width={78}
                   height={100}
                   style={{ width: "100%", height: "100%" }}
+                  onError={handleImageError} // Handle image error
                 />
               </button>
             ))}
@@ -38,10 +50,11 @@ const DetailsThumbWrapper = ({
           <div className="tab-pane fade show active">
             <div className="tp-product-details-nav-main-thumb p-relative">
               <Image
-                src={activeImg}
+                src={activeImage}
                 alt="product img"
                 width={400}
                 height={300}
+                onError={handleImageError} // Handle image error
               />
               <div className="tp-product-badge">
                 {status === 'out-of-stock' && <span className="product-hot">out-stock</span>}
@@ -74,3 +87,4 @@ const DetailsThumbWrapper = ({
 };
 
 export default DetailsThumbWrapper;
+

@@ -72,7 +72,9 @@ const ShopPage = ({ query }) => {
   } else {
     // Filter and sort products
     let product_items = products;
+    product_items = product_items.slice().sort((a, b) => Number(a.price) - Number(b.price));
 
+  
     // Sorting logic (default to New Added)
     if (selectValue === "Low to High") {
       product_items = product_items.slice().sort((a, b) => Number(a.price) - Number(b.price));
@@ -82,6 +84,8 @@ const ShopPage = ({ query }) => {
       product_items = product_items.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (selectValue === "On Sale") {
       product_items = product_items.filter((p) => p.discount > 0);
+    } else if (selectValue === "Updated Recently") { // New sorting option
+      product_items = product_items.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // Sort by updatedAt
     }
 
     // Price filter

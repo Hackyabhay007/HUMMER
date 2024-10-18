@@ -1,3 +1,4 @@
+// src/pages/product-details/[id].jsx
 import React from 'react';
 // internal
 import SEO from '@/components/seo';
@@ -6,36 +7,33 @@ import Footer from '@/layout/footers/footer';
 import Wrapper from '@/layout/wrapper';
 import ErrorMsg from '@/components/common/error-msg';
 import { useGetProductQuery } from '@/redux/features/productApi';
-import { additionalProduct } from '@/redux/features/additionalProduct';
 import ProductDetailsBreadcrumb from '@/components/breadcrumb/product-details-breadcrumb';
 import ProductDetailsArea from '@/components/product-details/product-details-area';
 import PrdDetailsLoader from '@/components/loader/prd-details-loader';
 
 const ProductDetailsPage = ({ query }) => {
-  // Log the query to ensure it contains the correct ID
   console.log('Product ID:', query.id);
 
+  // Fetch product data using the query hook
   const { data: product, isLoading, isError, error } = useGetProductQuery(query.id);
+  
+  // Log the loading and error states
+  console.log("Loading:", isLoading);
+  console.log("Error:", isError);
+  console.log("Received product:", product); // Log the received product
 
-  // If there's an error, fallback to the additionalProduct if it matches the query ID
-  let finalProduct = product;
-  if (isError) {
-    console.error('Error fetching product:', error);
-    if (additionalProduct._id === query.id) {
-      console.log('Falling back to additionalProduct');
-      finalProduct = additionalProduct;
-    }
-  }
-
-  // Decide what to render
-  let content = null;
+  // Decide what to render based on the loading and error states
+  let content;
   if (isLoading) {
     content = <PrdDetailsLoader loading={isLoading} />;
-  } else if (finalProduct) {
+  } else if (isError) {
+    console.error('Error fetching product:', error);
+    content = <ErrorMsg msg="Product not found." />;
+  } else if (product) {
     content = (
       <>
-        <ProductDetailsBreadcrumb category={finalProduct.category.name} title={finalProduct.title} />
-        <ProductDetailsArea productItem={finalProduct} />
+        <ProductDetailsBreadcrumb category={product.productType} title={product.title} />
+        <ProductDetailsArea productItem={product} />
       </>
     );
   } else {
