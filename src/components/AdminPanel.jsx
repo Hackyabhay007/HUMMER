@@ -4,11 +4,10 @@ import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
-// Update these imports
-import ProductList from './ProductList';
-import EditPopup from './EditPopup';
-import Pagination from './Pagination';
-
+// Correct imports
+import { ProductList } from './ProductList';
+import { EditPopup } from './EditPopup';
+import { Pagination } from './Pagination';
 
 const AdminPanel = () => {
   const [productData, setProductData] = useState({
@@ -484,13 +483,14 @@ const AdminPanel = () => {
         onDelete={handleDelete}
       />
 
-      {/* Pagination */}
-      <Pagination
+        {/* Pagination */}
+        <Pagination
         productsPerPage={productsPerPage}
         totalProducts={products.length}
         paginate={paginate}
         currentPage={currentPage}
       />
+
 
       {/* Edit Popup */}
       {showEditPopup && (
