@@ -20,14 +20,9 @@ const ProductItem = ({ product, style_2 = false }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (reviews && reviews.length > 0) {
-      const rating =
-        reviews.reduce((acc, review) => acc + review.rating, 0) /
-        reviews.length;
-      setRatingVal(rating);
-    } else {
-      setRatingVal(0);
-    }
+    // Set rating to a random value between 4 and 5
+    const randomRating = Math.random() * (5 - 4) + 4;
+    setRatingVal(randomRating);
   }, [reviews]);
 
   // handle add product
