@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { db, storage } from '../firebase/config';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db } from '../firebase/config';
+import { collection, setDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
-
-// Correct imports
-import { ProductList } from './ProductList';
-import { EditPopup } from './EditPopup';
-import { Pagination } from './Pagination';
 
 const AdminPanel = () => {
   const [productData, setProductData] = useState({
+    _id: '',
     title: '',
     description: '',
-    price: 0,
+    price: '',
     category: { name: '', id: '' },
     brand: { name: '', id: '' },
     status: 'in-stock',
     discount: 0,
+    img: '',
     imageURLs: [],
     tags: [],
     sku: '',
     productType: '',
-    quantity: 0,
+    quantity: '',
     unit: '',
     featured: false,
     sellCount: 0,
@@ -31,19 +27,18 @@ const AdminPanel = () => {
     sizes: [],
     additionalInformation: [],
     slug: '',
-    reviews: [],
+    reviews: { review: 0 },
     createdAt: null,
     updatedAt: null,
+    __v: 0
   });
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [showEditPopup, setShowEditPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(10);
-  const [files, setFiles] = useState([]);
 
   useEffect(() => {
     fetchProducts();
@@ -55,8 +50,8 @@ const AdminPanel = () => {
       const productsCollection = collection(db, 'products');
       const productsSnapshot = await getDocs(productsCollection);
       const productsList = productsSnapshot.docs.map(doc => ({
-        id: doc.id,
         ...doc.data(),
+        _id: doc.id
       }));
       setProducts(productsList);
     } catch (err) {
@@ -76,15 +71,15 @@ const AdminPanel = () => {
           ...prevData,
           [parentKey]: {
             ...prevData[parentKey],
-            [childKey]: type === 'number' ? Number(value) : value
+            [childKey]: value
           }
         };
       }
       if (type === 'checkbox') {
         return { ...prevData, [name]: checked };
       }
-      if (type === 'number') {
-        return { ...prevData, [name]: Number(value) };
+      if (['price', 'quantity', 'discount', 'sellCount', '__v'].includes(name)) {
+        return { ...prevData, [name]: value === '' ? '' : Number(value) };
       }
       return { ...prevData, [name]: value };
     });
@@ -121,45 +116,26 @@ const AdminPanel = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
-  };
-
-  const uploadImages = async () => {
-    const imageUrls = [];
-    for (const file of files) {
-      const storageRef = ref(storage, `product-images/${uuidv4()}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      imageUrls.push({ img: url });
-    }
-    return imageUrls;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      let imageURLs = productData.imageURLs;
-      if (files.length > 0) {
-        imageURLs = await uploadImages();
-      }
       const newProduct = {
         ...productData,
-        imageURLs,
         createdAt: productData.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         slug: productData.title.toLowerCase().replace(/ /g, '-'),
+        sku: productData.sku || `SKU-${uuidv4().slice(0, 8)}`,
+        sellCount: productData.sellCount || 0,
+        __v: productData.__v || 0,
+        _id: productData._id || uuidv4(),
+        img: productData.img || (productData.imageURLs.length > 0 ? productData.imageURLs[0] : '')
       };
-      if (editingProduct) {
-        await updateDoc(doc(db, 'products', editingProduct.id), newProduct);
-      } else {
-        await addDoc(collection(db, 'products'), newProduct);
-      }
+
+      await setDoc(doc(db, 'products', newProduct._id), newProduct, { merge: true });
+
       resetForm();
       fetchProducts();
-      setShowEditPopup(false);
     } catch (err) {
       console.error("Error saving product:", err);
       setError("Failed to save product. Please try again.");
@@ -171,7 +147,6 @@ const AdminPanel = () => {
   const handleEdit = (product) => {
     setEditingProduct(product);
     setProductData(product);
-    setShowEditPopup(true);
   };
 
   const handleDelete = async (productId) => {
@@ -189,18 +164,20 @@ const AdminPanel = () => {
 
   const resetForm = () => {
     setProductData({
+      _id: '',
       title: '',
       description: '',
-      price: 0,
+      price: '',
       category: { name: '', id: '' },
       brand: { name: '', id: '' },
       status: 'in-stock',
       discount: 0,
+      img: '',
       imageURLs: [],
       tags: [],
       sku: '',
       productType: '',
-      quantity: 0,
+      quantity: '',
       unit: '',
       featured: false,
       sellCount: 0,
@@ -209,15 +186,14 @@ const AdminPanel = () => {
       sizes: [],
       additionalInformation: [],
       slug: '',
-      reviews: [],
+      reviews: { review: 0 },
       createdAt: null,
       updatedAt: null,
+      __v: 0
     });
-    setFiles([]);
     setEditingProduct(null);
   };
 
-  // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -229,9 +205,8 @@ const AdminPanel = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Admin Panel</h2>
+      <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
       <form onSubmit={handleSubmit} className="mb-4">
-        {/* Basic Information */}
         <div className="mb-3">
           <input
             type="text"
@@ -264,8 +239,6 @@ const AdminPanel = () => {
             required
           />
         </div>
-        
-        {/* Category and Brand */}
         <div className="mb-3">
           <input
             type="text"
@@ -279,6 +252,16 @@ const AdminPanel = () => {
         <div className="mb-3">
           <input
             type="text"
+            name="category.id"
+            value={productData.category.id}
+            onChange={handleInputChange}
+            placeholder="Category ID"
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
             name="brand.name"
             value={productData.brand.name}
             onChange={handleInputChange}
@@ -286,8 +269,16 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Status and Discount */}
+        <div className="mb-3">
+          <input
+            type="text"
+            name="brand.id"
+            value={productData.brand.id}
+            onChange={handleInputChange}
+            placeholder="Brand ID"
+            className="form-control"
+          />
+        </div>
         <div className="mb-3">
           <select
             name="status"
@@ -309,8 +300,26 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Tags */}
+        <div className="mb-3">
+          <input
+            type="text"
+            name="img"
+            value={productData.img}
+            onChange={handleInputChange}
+            placeholder="Primary Image URL"
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            name="imageURLs"
+            value={productData.imageURLs.join(', ')}
+            onChange={(e) => setProductData({...productData, imageURLs: e.target.value.split(', ')})}
+            placeholder="Additional Image URLs (comma-separated)"
+            className="form-control"
+          />
+        </div>
         <div className="mb-3">
           <input
             type="text"
@@ -321,8 +330,6 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* SKU and Product Type */}
         <div className="mb-3">
           <input
             type="text"
@@ -343,8 +350,6 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Quantity and Unit */}
         <div className="mb-3">
           <input
             type="number"
@@ -365,8 +370,6 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Featured and Sell Count */}
         <div className="mb-3 form-check">
           <input
             type="checkbox"
@@ -388,8 +391,6 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Parent and Children */}
         <div className="mb-3">
           <input
             type="text"
@@ -410,8 +411,6 @@ const AdminPanel = () => {
             className="form-control"
           />
         </div>
-        
-        {/* Sizes */}
         <div className="mb-3">
           <h5>Sizes</h5>
           {productData.sizes.map((size, index) => (
@@ -427,8 +426,6 @@ const AdminPanel = () => {
           ))}
           <button type="button" onClick={() => handleAddArrayItem('sizes')} className="btn btn-secondary">Add Size</button>
         </div>
-        
-        {/* Additional Information */}
         <div className="mb-3">
           <h5>Additional Information</h5>
           {productData.additionalInformation.map((info, index) => (
@@ -458,24 +455,32 @@ const AdminPanel = () => {
           ))}
           <button type="button" onClick={() => handleAddArrayItem('additionalInformation')} className="btn btn-secondary">Add Info</button>
         </div>
-        
-        {/* Image Upload */}
         <div className="mb-3">
           <input
-            type="file"
-            onChange={handleFileChange}
-            multiple
-            accept="image/*"
+            type="number"
+            name="reviews.review"
+            value={productData.reviews.review}
+            onChange={handleInputChange}
+            placeholder="Review Score"
             className="form-control"
           />
-          <small className="form-text text-muted">Select up to 5 images</small>
+        </div>
+        <div className="mb-3">
+          <input
+            type="number"
+            name="__v"
+            value={productData.__v}
+            onChange={handleInputChange}
+            placeholder="Version"
+            className="form-control"
+          />
         </div>
         
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? 'Saving...' : (editingProduct ? 'Update Product' : 'Add Product')}
         </button>
       </form>
-      {/* Product List */}
+
       <h3>Product List</h3>
       <ProductList
         products={currentProducts}
@@ -483,34 +488,56 @@ const AdminPanel = () => {
         onDelete={handleDelete}
       />
 
-        {/* Pagination */}
-        <Pagination
+      <Pagination
         productsPerPage={productsPerPage}
         totalProducts={products.length}
         paginate={paginate}
         currentPage={currentPage}
       />
-
-
-      {/* Edit Popup */}
-      {showEditPopup && (
-        <EditPopup
-          product={editingProduct}
-          onClose={() => setShowEditPopup(false)}
-          onSave={handleSubmit}
-          onChange={handleInputChange}
-          onArrayInputChange={handleArrayInputChange}
-          onAddArrayItem={handleAddArrayItem}
-          onRemoveArrayItem={handleRemoveArrayItem}
-          onAdditionalInfoChange={handleAdditionalInfoChange}
-          onFileChange={handleFileChange}
-        />
-      )}
     </div>
   );
 };
 
+const ProductList = ({ products, onEdit, onDelete }) => {
+  return (
+    <div className="product-list">
+      {products.map(product => (
+        <div key={product._id} className="product-item mb-3 p-3 border">
+          <h4>{product.title}</h4>
+          <p>Price: ${product.price}</p>
+          <p>SKU: {product.sku}</p>
+          <p>Status: {product.status}</p>
+          {product.img && <img src={product.img} alt={product.title} style={{maxWidth: '100px', maxHeight: '100px'}} />}
+          <div className="mt-2">
+            <button onClick={() => onEdit(product)} className="btn btn-secondary me-2">Edit</button>
+            <button onClick={() => onDelete(product._id)} className="btn btn-danger">Delete</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const Pagination = ({ productsPerPage, totalProducts, paginate, currentPage }) => {
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(totalProducts / productsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  return (
+    <nav>
+      <ul className="pagination">
+        {pageNumbers.map(number => (
+          <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+            <button onClick={() => paginate(number)} className="page-link">
+              {number}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
 export default AdminPanel;
-
-
-
