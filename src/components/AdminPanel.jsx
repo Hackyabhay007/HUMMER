@@ -7,13 +7,13 @@ const AdminPanel = () => {
   const [productData, setProductData] = useState({
     _id: '',
     title: '',
+    img: '', 
     description: '',
     price: '',
     category: { name: '', id: '' },
     brand: { name: '', id: '' },
     status: 'in-stock',
     discount: 0,
-    img: '',
     imageURLs: [],
     tags: [],
     sku: '',
@@ -85,6 +85,34 @@ const AdminPanel = () => {
     });
   };
 
+  const handleImageURLChange = (e, index) => {
+    const { value } = e.target;
+    setProductData(prevData => {
+      const newImageURLs = [...prevData.imageURLs];
+      newImageURLs[index] = { img: value };
+      // Update img field if it's the first image
+      const newImg = index === 0 ? value : prevData.img;
+      return { ...prevData, imageURLs: newImageURLs, img: newImg };
+    });
+  };
+
+
+  const addImageURL = () => {
+    setProductData(prevData => ({
+      ...prevData,
+      imageURLs: [...prevData.imageURLs, { img: '' }]
+    }));
+  };
+
+  const removeImageURL = (index) => {
+    setProductData(prevData => {
+      const newImageURLs = prevData.imageURLs.filter((_, i) => i !== index);
+      // Update img field if the first image is removed
+      const newImg = index === 0 ? (newImageURLs[0]?.img || '') : prevData.img;
+      return { ...prevData, imageURLs: newImageURLs, img: newImg };
+    });
+  };
+
   const handleArrayInputChange = (e, index, field) => {
     const { value } = e.target;
     setProductData(prevData => {
@@ -129,7 +157,7 @@ const AdminPanel = () => {
         sellCount: productData.sellCount || 0,
         __v: productData.__v || 0,
         _id: productData._id || uuidv4(),
-        img: productData.img || (productData.imageURLs.length > 0 ? productData.imageURLs[0] : '')
+        img: productData.imageURLs[0]?.img || '' // Ensure img is set to the first image URL
       };
 
       await setDoc(doc(db, 'products', newProduct._id), newProduct, { merge: true });
@@ -172,7 +200,6 @@ const AdminPanel = () => {
       brand: { name: '', id: '' },
       status: 'in-stock',
       discount: 0,
-      img: '',
       imageURLs: [],
       tags: [],
       sku: '',
@@ -301,24 +328,20 @@ const AdminPanel = () => {
           />
         </div>
         <div className="mb-3">
-          <input
-            type="text"
-            name="img"
-            value={productData.img}
-            onChange={handleInputChange}
-            placeholder="Primary Image URL"
-            className="form-control"
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="text"
-            name="imageURLs"
-            value={productData.imageURLs.join(', ')}
-            onChange={(e) => setProductData({...productData, imageURLs: e.target.value.split(', ')})}
-            placeholder="Additional Image URLs (comma-separated)"
-            className="form-control"
-          />
+          <h5>Image URLs</h5>
+          {productData.imageURLs.map((imgObj, index) => (
+            <div key={index} className="input-group mb-2">
+              <input
+                type="text"
+                value={imgObj.img}
+                onChange={(e) => handleImageURLChange(e, index)}
+                placeholder={index === 0 ? "Primary Image URL" : "Additional Image URL"}
+                className="form-control"
+              />
+              <button type="button" onClick={() => removeImageURL(index)} className="btn btn-danger">Remove</button>
+            </div>
+          ))}
+          <button type="button" onClick={addImageURL} className="btn btn-secondary">Add Image URL</button>
         </div>
         <div className="mb-3">
           <input
@@ -507,7 +530,9 @@ const ProductList = ({ products, onEdit, onDelete }) => {
           <p>Price: ${product.price}</p>
           <p>SKU: {product.sku}</p>
           <p>Status: {product.status}</p>
-          {product.img && <img src={product.img} alt={product.title} style={{maxWidth: '100px', maxHeight: '100px'}} />}
+          {product.img && (
+            <img src={product.img} alt={product.title} style={{maxWidth: '100px', maxHeight: '100px'}} />
+          )}
           <div className="mt-2">
             <button onClick={() => onEdit(product)} className="btn btn-secondary me-2">Edit</button>
             <button onClick={() => onDelete(product._id)} className="btn btn-danger">Delete</button>
@@ -517,6 +542,7 @@ const ProductList = ({ products, onEdit, onDelete }) => {
     </div>
   );
 };
+
 
 const Pagination = ({ productsPerPage, totalProducts, paginate, currentPage }) => {
   const pageNumbers = [];
